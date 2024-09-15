@@ -1,12 +1,12 @@
 package com.alyssonbarrera.todolist.user.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.alyssonbarrera.todolist.task.entities.Task;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "users")
@@ -19,6 +19,10 @@ public class User {
     @Column(unique = true)
     private String username;
     private String password;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -61,6 +65,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     public LocalDateTime getCreatedAt() {

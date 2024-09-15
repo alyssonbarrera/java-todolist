@@ -21,6 +21,6 @@ public class CreateUserController {
     public ResponseEntity handle(@RequestBody User user) {
         User result = this.createUserService.execute(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }
