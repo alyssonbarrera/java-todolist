@@ -1,6 +1,6 @@
 package com.alyssonbarrera.todolist.errors;
 
-public class AppError extends RuntimeException {
+public class AppError {
     private String message;
     private Integer statusCode;
 

@@ -1,11 +1,12 @@
 package com.alyssonbarrera.todolist.task.controllers;
 
+import com.alyssonbarrera.todolist.errors.AppError;
 import com.alyssonbarrera.todolist.task.dtos.TaskDTO;
 import com.alyssonbarrera.todolist.task.entities.Task;
 import com.alyssonbarrera.todolist.task.services.CreateTaskService;
 import com.alyssonbarrera.todolist.user.entities.User;
+import com.alyssonbarrera.todolist.utils.either.Either;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,15 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tasks")
 public class CreateTaskController {
 
-    @Autowired
-    private CreateTaskService createTaskService;
+    private final CreateTaskService createTaskService;
+
+    public CreateTaskController(CreateTaskService createTaskService) {
+        this.createTaskService = createTaskService;
+    }
 
     @PostMapping("")
-    public ResponseEntity handle(@RequestBody Task task, HttpServletRequest request) {
+    public ResponseEntity<?> handle(@RequestBody Task task, HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
 
-        TaskDTO result = this.createTaskService.execute(task, user);
+        Either<AppError, TaskDTO> result = createTaskService.execute(task, user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        if (result.isLeft()) {
+            AppError error = result.getLeft();
+            return ResponseEntity.status(error.getStatusCode()).body(error);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.getRight());
     }
 }

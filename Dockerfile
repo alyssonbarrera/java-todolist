@@ -1,17 +1,20 @@
-FROM ubuntu:latest AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+WORKDIR /app
 
-COPY . .
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-RUN apt-get install maven -y
-RUN mvn clean install
+COPY src ./src
+
+RUN mvn clean package -DskipTests
 
 FROM openjdk:17-jdk-slim
 
+WORKDIR /app
+
 EXPOSE 8080
 
-COPY --from=build /target/todolist-1.0.0.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.devtools.restart.enabled=false", "-jar", "app.jar"]

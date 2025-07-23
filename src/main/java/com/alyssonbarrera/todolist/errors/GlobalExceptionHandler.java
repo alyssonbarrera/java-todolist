@@ -14,10 +14,4 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMostSpecificCause().getMessage(), 400);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
-
-    @ExceptionHandler(AppError.class)
-    public ResponseEntity<ErrorResponse> handleAppError(AppError ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), ex.getStatusCode());
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
-    }
 }

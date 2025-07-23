@@ -4,7 +4,6 @@ import com.alyssonbarrera.todolist.task.dtos.TaskListDTO;
 import com.alyssonbarrera.todolist.task.entities.Task;
 import com.alyssonbarrera.todolist.task.repositories.TasksRepository;
 import com.alyssonbarrera.todolist.user.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @Service
 public class FetchTasksService {
 
-    @Autowired
-    private TasksRepository tasksRepository;
+    private final TasksRepository tasksRepository;
+
+    public FetchTasksService(TasksRepository tasksRepository) {
+        this.tasksRepository = tasksRepository;
+    }
 
     public List<TaskListDTO> execute(User user) {
         List<Task> tasks = this.tasksRepository.findAllByUser(user);

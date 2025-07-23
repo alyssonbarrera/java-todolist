@@ -1,10 +1,10 @@
 package com.alyssonbarrera.todolist.task.controllers;
 
 import com.alyssonbarrera.todolist.task.dtos.TaskListDTO;
+import com.alyssonbarrera.todolist.task.presenters.TasksPresenter;
 import jakarta.servlet.http.HttpServletRequest;
 import com.alyssonbarrera.todolist.task.services.FetchTasksService;
 import com.alyssonbarrera.todolist.user.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +17,19 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class FetchTasksController {
 
-    @Autowired
-    private FetchTasksService fetchTasksService;
+    private final FetchTasksService fetchTasksService;
+
+    public FetchTasksController(FetchTasksService fetchTasksService) {
+        this.fetchTasksService = fetchTasksService;
+    }
 
     @GetMapping("")
-    public ResponseEntity handle(HttpServletRequest request) {
+    public ResponseEntity<TasksPresenter> handle(HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
-        List<TaskListDTO> result = this.fetchTasksService.execute(user);
+        List<TaskListDTO> tasks = this.fetchTasksService.execute(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        TasksPresenter response = new TasksPresenter(tasks);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

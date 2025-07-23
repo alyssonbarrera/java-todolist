@@ -1,13 +1,31 @@
-version: '3'
+version: '3.8'
 name: todolist_java
 
 services:
-  nlw_pocket_db:
+  java_todo_db:
     image: bitnami/postgresql:13.16.0
     container_name: todolist_db
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRESQL_USERNAME=docker
       - POSTGRESQL_PASSWORD=docker
       - POSTGRESQL_DATABASE=todolist_db
+    volumes:
+      - postgres_data:/bitnami/postgresql
+
+  app:
+    build: .
+    container_name: todolist_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - java_todo_db
+    restart: always
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+volumes:
+  postgres_data:
